@@ -30,6 +30,7 @@
         - ca-certificates
         - sudo
         - locales
+        - curl
 
     - name: Transfer locales_setup.sh
       copy: src=locales_setup.sh dest=/root/locales_setup.sh
@@ -102,6 +103,17 @@
         - psycopg2
         - uwsgi
         - wheel
+
+    # -------------------------------------------------------------------------
+    # Install NodeSource NodeJS
+    # -------------------------------------------------------------------------
+
+    - name: Run the NodeSource installation script
+      command: curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+
+    - name: Upgrade debian
+      apt:
+        name: nodejs
 
     # -------------------------------------------------------------------------
     # Upload configurations
