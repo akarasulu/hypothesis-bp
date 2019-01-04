@@ -66,25 +66,11 @@
       user:
         name: hypothesis
         password: "{{ password }}"
-        groups:
-          - hypothesis
-          - www-data
         state: present
         shell: /bin/bash
         system: no
         createhome: yes
         home: /var/lib/hypothesis
-
-    # - name: Create hypothesis directories
-    #   file:
-    #     path: "{{item}}"
-    #     state: directory
-    #     mode: 0755
-    #     owner: hypothesis
-    #   with_items:
-    #     - /var/lib/hypothesis/sessions
-    #     - /var/lib/hypothesis/storage
-    #     - /var/log/hypothesis
 
     # -------------------------------------------------------------------------
     # Prepare Python3.5 based environment, install the stuff
