@@ -31,6 +31,7 @@
         - sudo
         - locales
         - curl
+        - apt-transport-https
 
     - name: Transfer locales_setup.sh
       copy: src=locales_setup.sh dest=/root/locales_setup.sh
