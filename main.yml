@@ -49,6 +49,7 @@
         state: present
       with_items: 
         - build-essential
+        - git
         - libevent-dev
         - libffi-dev
         - libssl-dev
@@ -140,6 +141,15 @@
       copy:
         src: hypothesis.service
         dest: /etc/systemd/system/hypothesis.service
+
+    - name: Clone hypothesis repository
+      git: 
+        repo: https://github.com/hypothesis/h.git
+        dest: /var/lib/hypothesis/repo
+        clone: yes
+        become: yes
+        become_user: hypothesis
+
 
     # -------------------------------------------------------------------------
     # Setup NGINX
