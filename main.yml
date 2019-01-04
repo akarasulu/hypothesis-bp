@@ -128,7 +128,7 @@
       name: nginx
       state: stopped
 
-    - name: Change user from www-data to pgadmin for nginx
+    - name: Change user from www-data to hypothesis for nginx
       lineinfile:
         path: /etc/nginx/nginx.conf
         regexp: '^user .*www-data;$'
@@ -161,7 +161,7 @@
     
     - name: Change domainname to target domain
       lineinfile:
-        path: /etc/nginx/sites-available/pgadmin
+        path: /etc/nginx/sites-available/hypothesis
         regexp: '.*server_name .*h.envs.subut.ai$'
         line: "   server_name {{ domain }}"
     
