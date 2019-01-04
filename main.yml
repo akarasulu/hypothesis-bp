@@ -54,10 +54,10 @@
         - libpq-dev
         - libfontconfig
         - nginx
-        - python3-dev
+        - python-dev
         - python-virtualenv
         - python-setuptools
-        - python3-pip
+        - python-pip
 
     # -------------------------------------------------------------------------
     # Create hypothesis user, dirs
@@ -74,18 +74,18 @@
         home: /var/lib/hypothesis
 
     # -------------------------------------------------------------------------
-    # Prepare Python3.5 based environment, install the stuff
+    # Prepare Python based environment, install the stuff
     # -------------------------------------------------------------------------
 
     - name: Prepare python environment
-      command: virtualenv -p /usr/bin/python3.5 --system-site-packages --always-copy /var/lib/hypothesis/env 
+      command: virtualenv -p /usr/bin/python2.7 --system-site-packages --always-copy /var/lib/hypothesis/env 
       become: yes
       become_user: hypothesis
 
     - name: Install psycopg2, wheel, uwsgi python packages
       pip:
         name: "{{ item }}"
-        executable: /usr/bin/pip3
+        executable: /usr/bin/pip
       with_items:
         - psycopg2
         - uwsgi
@@ -102,9 +102,15 @@
         url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
         state: present
     
-    - name: Add repository for NodeSource repo
+    - name: Add binary repository for NodeSource repo
       apt_repository:
         repo: deb https://deb.nodesource.com/node_11.x/ xenial main
+        update_cache: true
+        state: present
+    
+    - name: Add source repository for NodeSource repo
+      apt_repository:
+        repo: deb-src https://deb.nodesource.com/node_11.x/ xenial main
         update_cache: true
         state: present
     
