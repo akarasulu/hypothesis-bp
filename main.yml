@@ -56,6 +56,7 @@
         - nginx
         - python3-dev
         - python-virtualenv
+        - python-setuptools
         - python3-pip
 
     # -------------------------------------------------------------------------
@@ -89,17 +90,28 @@
         - psycopg2
         - uwsgi
         - wheel
+        - tox
+        - tox-pip-extensions
 
     # -------------------------------------------------------------------------
     # Install NodeSource NodeJS
     # -------------------------------------------------------------------------
 
-    - name: Run the NodeSource installation script
-      command: curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-
-    - name: Upgrade debian
+    - name: Install repository keys for NodeSource repo
+      apt_key: 
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        state: present
+    
+    - name: Add repository for NodeSource repo
+      apt_repository:
+        repo: deb https://deb.nodesource.com/node_11.x/ xenial main
+        update_cache: true
+        state: present
+    
+    - name: Install nodejs
       apt:
         name: nodejs
+        state: present
 
     # -------------------------------------------------------------------------
     # Upload configurations
