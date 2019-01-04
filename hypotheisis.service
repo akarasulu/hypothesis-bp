@@ -1,0 +1,14 @@
+[Unit]
+Description=hypothesis server
+After=network.target
+User=hypothesis
+Group=hypothesis
+RootDirectory=/var/lib/hypothesis
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/uwsgi /var/lib/hypothesis/hypothesis.ini
+
+[Install]
+WantedBy=multi-user.target

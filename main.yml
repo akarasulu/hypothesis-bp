@@ -1,0 +1,171 @@
+# Ansible Playbook for Subutai Hypothesis Blueprint
+--- 
+
+- hosts: hypothesis
+  remote_user: root
+  tasks:
+
+    # -------------------------------------------------------------------------
+    # Freshen up the host
+    # -------------------------------------------------------------------------
+
+    - name: Disable dpkg fsync
+      raw: test -e /etc/dpkg/dpkg.cfg.d/unsafe-io || echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/unsafe-io
+
+    - name: Upgrade debian
+      apt:
+        update_cache: true
+        upgrade: true
+
+    # -------------------------------------------------------------------------
+    # Install shit that should be there and fix locales
+    # -------------------------------------------------------------------------
+
+    - name: Install setup tools
+      apt:
+        name: "{{ item }}"
+        allow_unauthenticated: yes
+      with_items:
+        - dirmngr
+        - ca-certificates
+        - sudo
+        - locales
+
+    - name: Transfer locales_setup.sh
+      copy: src=locales_setup.sh dest=/root/locales_setup.sh
+
+    - name: Execute locales_setup.sh
+      command: bash /root/locales_setup.sh
+
+    # -------------------------------------------------------------------------
+    # Install all that's needed
+    # -------------------------------------------------------------------------
+
+    - name: Install required debs
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items: 
+        - build-essential
+        - libevent-dev
+        - libffi-dev
+        - libssl-dev
+        - libpq-dev
+        - libfontconfig
+        - nginx
+        - python3-dev
+        - python-virtualenv
+        - python3-pip
+
+    # -------------------------------------------------------------------------
+    # Create hypothesis user, dirs
+    # -------------------------------------------------------------------------
+
+    - name: Create hypothesis user
+      user:
+        name: hypothesis
+        password: "{{ password }}"
+        groups:
+          - hypothesis
+          - www-data
+        state: present
+        shell: /bin/bash
+        system: no
+        createhome: yes
+        home: /var/lib/hypothesis
+
+    # - name: Create hypothesis directories
+    #   file:
+    #     path: "{{item}}"
+    #     state: directory
+    #     mode: 0755
+    #     owner: hypothesis
+    #   with_items:
+    #     - /var/lib/hypothesis/sessions
+    #     - /var/lib/hypothesis/storage
+    #     - /var/log/hypothesis
+
+    # -------------------------------------------------------------------------
+    # Prepare Python3.5 based environment, install the stuff
+    # -------------------------------------------------------------------------
+
+    - name: Prepare python environment
+      command: virtualenv -p /usr/bin/python3.5 --system-site-packages --always-copy /var/lib/hypothesis/env 
+      become: yes
+      become_user: hypothesis
+
+    - name: Install psycopg2, wheel, uwsgi python packages
+      pip:
+        name: "{{ item }}"
+        executable: /usr/bin/pip3
+      with_items:
+        - psycopg2
+        - uwsgi
+        - wheel
+
+    # -------------------------------------------------------------------------
+    # Upload configurations
+    # -------------------------------------------------------------------------
+
+    - name: Transfer hypothesis.ini
+      copy:
+        src: hypothesis.ini
+        dest: /var/lib/hypothesis/hypothesis.ini
+        owner: hypothesis
+        mode: 0644
+
+    - name: Transfer service file
+      copy:
+        src: hypothesis.service
+        dest: /etc/systemd/system/hypothesis.service
+
+    # -------------------------------------------------------------------------
+    # Setup NGINX
+    # -------------------------------------------------------------------------
+
+    - name: Stop the NGINX server
+      systemd:
+      name: nginx
+      state: stopped
+
+    - name: Change user from www-data to pgadmin for nginx
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '^user .*www-data;$'
+        line: 'user hypothesis;'
+    
+    - name: Change owner on all files
+      file: 
+        dest: /var/log/nginx
+        owner: hypothesis
+        group: hypothesis
+        recurse: yes
+
+    - name: Add new vhost in nginx-hypothesis.conf
+      copy:
+        src: nginx-hypothesis.conf
+        dest: /etc/nginx/sites-available/hypothesis
+        mode: 0644
+        owner: root
+
+    - name: Create symbolic link to enable
+      file: 
+        src: /etc/nginx/sites-available/hypothesis
+        dest: /etc/nginx/sites-enabled/hypothesis
+        state: link
+
+    - name: Disable default vhost
+      file:
+        path: /etc/nginx/sites-enabled/hypothesis
+        state: absent
+    
+    - name: Change domainname to target domain
+      lineinfile:
+        path: /etc/nginx/sites-available/pgadmin
+        regexp: '.*server_name .*h.envs.subut.ai$'
+        line: "   server_name {{ domain }}"
+    
+    - name: Start up NGINX
+      systemd:
+        name: nginx
+        state: restarted
