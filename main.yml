@@ -50,10 +50,6 @@
       with_items: 
         - build-essential
         - git
-        - py2-pip
-        - collectd
-        - collectd-disk
-        - collectd-nginx
         - libevent-dev
         - libffi-dev
         - libssl-dev
@@ -64,6 +60,30 @@
         - python-virtualenv
         - python-setuptools
         - python-pip
+
+    # -------------------------------------------------------------------------
+    # Collectd Repository and Install
+    # -------------------------------------------------------------------------
+
+    - name: Install repository keys for Collectd repo
+      apt_key: 
+        id: 3994D24FB8543576
+        state: present
+    
+    - name: Add binary repository for NodeSource repo
+      apt_repository:
+        repo: deb http://pkg.ci.collectd.org/deb xenial collectd-5.6
+        update_cache: true
+        state: present
+    
+    - name: Install collectd packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - collectd
+        - collectd-disk
+        - collectd-nginx
 
     # -------------------------------------------------------------------------
     # Create hypothesis user, dirs
@@ -148,7 +168,8 @@
       copy:
         src: hypothesis.service
         dest: /etc/systemd/system/hypothesis.service
-
+    
+    # Purposefully cloning right into the user directory
     - name: Clone hypothesis repository
       git: 
         repo: https://github.com/hypothesis/h.git
