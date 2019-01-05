@@ -50,6 +50,10 @@
       with_items: 
         - build-essential
         - git
+        - py2-pip
+        - collectd
+        - collectd-disk
+        - collectd-nginx
         - libevent-dev
         - libffi-dev
         - libssl-dev
@@ -123,8 +127,11 @@
 
     - name: Install npm
       npm:
-        name: npm
+        name: "{{ item }}"
         global: yes
+      with_items:
+        - npm
+        - gulp 
 
     # -------------------------------------------------------------------------
     # Upload configurations
@@ -145,11 +152,10 @@
     - name: Clone hypothesis repository
       git: 
         repo: https://github.com/hypothesis/h.git
-        dest: /var/lib/hypothesis/repo
+        dest: /var/lib/hypothesis
         clone: yes
       become: yes
       become_user: hypothesis
-
 
     # -------------------------------------------------------------------------
     # Setup NGINX
@@ -168,10 +174,14 @@
     
     - name: Change owner on all files
       file: 
-        dest: /var/log/nginx
+        dest: "{{ item }}"
         owner: hypothesis
         group: hypothesis
         recurse: yes
+      with_items:
+        - /var/log/nginx
+        - /var/lib/nginx
+        - /var/tmp/nginx
 
     - name: Add new vhost in nginx-hypothesis.conf
       copy:
