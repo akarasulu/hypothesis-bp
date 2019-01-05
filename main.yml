@@ -95,7 +95,7 @@
         shell: /bin/bash
         system: no
         createhome: yes
-        home: /var/lib/hypothesis
+        home: /var/lib/hypothesis/repo
 
     # -------------------------------------------------------------------------
     # Prepare Python based environment, install the stuff
