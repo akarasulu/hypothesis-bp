@@ -225,6 +225,28 @@
         regexp: '.*server_name .*h.envs.subut.ai$'
         line: "   server_name {{ domain }}"
     
+    # -------------------------------------------------------------------------
+    # Building Hypothesis
+    # -------------------------------------------------------------------------
+
+    - name: Add ENV Parameters
+      blockinfile:
+        path: /etc/environment
+        block: |
+          NODE_ENV=production
+          PYTHONIOENCODING=utf_8
+
+    - name: Add PATH Modifications
+      blockinfile:
+        path: /etc/profile.d/hypothesis.sh
+        create: yes
+        block: |
+          PATH=/var/lib/hypothesis/bin:$PATH
+          PYTHONPATH=/var/lib/hypothesis:$PYTHONPATH
+
+
+
+
     - name: Start up NGINX
       systemd:
         name: nginx
