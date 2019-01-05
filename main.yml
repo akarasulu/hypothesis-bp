@@ -67,7 +67,7 @@
 
     - name: Install repository keys for Collectd repo
       apt_key: 
-        id: 3994D24FB8543576
+        url: https://pkg.ci.collectd.org/pubkey.asc
         state: present
     
     - name: Add binary repository for NodeSource repo
