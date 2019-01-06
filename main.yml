@@ -234,10 +234,8 @@
           BROKER_URL=amqp://guest:guest@rabbitmq:5672//
           DATABASE_URL=postgresql://postgres@db0/postgres
           ELASTICSEARCH_URL=http://elasticsearch:9200"
-          SECRET_KEY=nosecret
+          SECRET_KEY="{{ subutai.user_variables.password }}"
           
-      # "{{ subutai.user_variables.password }}"
-
     - name: Add PATH Modifications
       blockinfile:
         path: /etc/profile.d/hypothesis.sh
@@ -253,7 +251,7 @@
     - name: Build h js/css
         command: npm run build
 
-    # - name: Start up NGINX
-    #   systemd:
-    #     name: nginx
-    #     state: restarted
+    - name: Start up NGINX
+      systemd:
+        name: nginx
+        state: restarted
