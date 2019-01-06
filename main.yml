@@ -151,9 +151,7 @@
 
     - name: Install npm
       npm:
-        name:
-          - npm
-          - gulp 
+        name: gulp 
         global: yes
 
     # -------------------------------------------------------------------------
