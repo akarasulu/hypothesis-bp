@@ -123,6 +123,11 @@
           - tox-pip-extensions
         executable: /usr/bin/pip
 
+    - name: Install python requirements
+      pip:
+        requirements: /var/lib/hypothesis/requirements.txt
+        executable: /usr/bin/pip
+
     # -------------------------------------------------------------------------
     # Install NodeSource NodeJS
     # -------------------------------------------------------------------------
