@@ -90,7 +90,7 @@
     - name: Create hypothesis user
       user:
         name: hypothesis
-        password: "{{ password }}"
+        password: "{{ subutai.user_variables.password }}"
         state: present
         shell: /bin/bash
         system: no
@@ -115,14 +115,13 @@
 
     - name: Install psycopg2, wheel, uwsgi python packages
       pip:
-        name: "{{ item }}"
+        name:
+          - psycopg2
+          - uwsgi
+          - wheel
+          - tox
+          - tox-pip-extensions
         executable: /usr/bin/pip
-      with_items:
-        - psycopg2
-        - uwsgi
-        - wheel
-        - tox
-        - tox-pip-extensions
 
     # -------------------------------------------------------------------------
     # Install NodeSource NodeJS
@@ -190,14 +189,13 @@
     
     - name: Change owner on all files
       file: 
-        dest: "{{ item }}"
+        dest:
+          - /var/log/nginx
+          - /var/lib/nginx
+          - /var/tmp/nginx
         owner: hypothesis
         group: hypothesis
         recurse: yes
-      with_items:
-        - /var/log/nginx
-        - /var/lib/nginx
-        - /var/tmp/nginx
 
     - name: Add new vhost in nginx-hypothesis.conf
       copy:
@@ -221,7 +219,7 @@
       lineinfile:
         path: /etc/nginx/sites-available/hypothesis
         regexp: '.*server_name .*h.envs.subut.ai$'
-        line: "   server_name {{ domain }}"
+        line: "   server_name {{ subutai.user_variables.domain }}"
     
     # -------------------------------------------------------------------------
     # Building Hypothesis
