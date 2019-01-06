@@ -74,14 +74,18 @@
     
     - name: Install collectd packages
       apt:
-        name: "{{ item }}"
+        name: collectd
         state: present
-      with_items:
-        - collectd
 
     # -------------------------------------------------------------------------
     # Create hypothesis user, dirs
     # -------------------------------------------------------------------------
+
+    - name: Clone hypothesis repository
+      git: 
+        repo: https://github.com/hypothesis/h.git
+        dest: /var/lib/hypothesis
+        clone: yes
 
     - name: Create hypothesis user
       user:
@@ -90,8 +94,15 @@
         state: present
         shell: /bin/bash
         system: no
-        createhome: yes
+        createhome: no
         home: /var/lib/hypothesis
+
+    - name: Chmod all of /var/lib/hypothesis
+      file:
+        dest: /var/lib/hypothesis
+        owner: hypothesis
+        group: hypothesis
+        recurse: yes
 
     # -------------------------------------------------------------------------
     # Prepare Python based environment, install the stuff
@@ -141,11 +152,10 @@
 
     - name: Install npm
       npm:
-        name: "{{ item }}"
+        name:
+          - npm
+          - gulp 
         global: yes
-      with_items:
-        - npm
-        - gulp 
 
     # -------------------------------------------------------------------------
     # Upload configurations
@@ -163,14 +173,6 @@
         src: hypothesis.service
         dest: /etc/systemd/system/hypothesis.service
     
-    - name: Clone hypothesis repository
-      git: 
-        repo: https://github.com/hypothesis/h.git
-        dest: /var/lib/hypothesis/repo
-        clone: yes
-      become: yes
-      become_user: hypothesis
-
     # -------------------------------------------------------------------------
     # Setup NGINX
     # -------------------------------------------------------------------------
