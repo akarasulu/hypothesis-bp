@@ -61,21 +61,21 @@
     # Collectd Repository and Install
     # -------------------------------------------------------------------------
 
-    # - name: Install repository keys for Collectd repo
-    #   apt_key: 
-    #     url: https://pkg.ci.collectd.org/pubkey.asc
-    #     state: present
+    - name: Install repository keys for Collectd repo
+      apt_key: 
+        url: https://pkg.ci.collectd.org/pubkey.asc
+        state: present
     
-    # - name: Add binary repository for NodeSource repo
-    #   apt_repository:
-    #     repo: deb http://pkg.ci.collectd.org/deb xenial collectd-5.6
-    #     update_cache: true
-    #     state: present
+    - name: Add binary repository for NodeSource repo
+      apt_repository:
+        repo: deb http://pkg.ci.collectd.org/deb xenial collectd-5.6
+        update_cache: true
+        state: present
     
-    # - name: Install collectd packages
-    #   apt:
-    #     name: collectd
-    #     state: present
+    - name: Install collectd packages
+      apt:
+        name: collectd
+        state: present
 
     # -------------------------------------------------------------------------
     # Create hypothesis user, dirs
