@@ -1,7 +1,7 @@
 {
     "name": "${environmentName}",
     "description": "A Subutai Blueprint for the Hypothesis Server",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "ssh-key": "hypothesis",
     "author": "https://github.com/akarasulu",
     "containers": [
