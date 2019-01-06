@@ -246,10 +246,10 @@
           PYTHONPATH=/var/lib/hypothesis:$PYTHONPATH
     
     - name: Build node dependencies
-        command: "npm ci --production"
+      command: "npm ci --production"
     
     - name: Build h js/css
-        command: npm run build
+      command: npm run build
 
     - name: Start up NGINX
       systemd:
