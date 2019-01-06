@@ -149,7 +149,7 @@
         name: nodejs
         state: present
 
-    - name: Install npm
+    - name: Install gulp
       npm:
         name: gulp 
         global: yes
