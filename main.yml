@@ -158,66 +158,66 @@
     # Upload configurations
     # -------------------------------------------------------------------------
 
-    # - name: Transfer hypothesis.ini
-    #   copy:
-    #     src: hypothesis.ini
-    #     dest: /var/lib/hypothesis/hypothesis.ini
-    #     owner: hypothesis
-    #     mode: 0644
+    - name: Transfer hypothesis.ini
+      copy:
+        src: hypothesis.ini
+        dest: /var/lib/hypothesis/hypothesis.ini
+        owner: hypothesis
+        mode: 0644
 
-    # - name: Transfer service file
-    #   copy:
-    #     src: hypothesis.service
-    #     dest: /etc/systemd/system/hypothesis.service
+    - name: Transfer service file
+      copy:
+        src: hypothesis.service
+        dest: /etc/systemd/system/hypothesis.service
     
     # -------------------------------------------------------------------------
     # Setup NGINX
     # -------------------------------------------------------------------------
 
-    # - name: Stop the NGINX server
-    #   systemd:
-    #     name: nginx
-    #     state: stopped
+    - name: Stop the NGINX server
+      systemd:
+        name: nginx
+        state: stopped
 
-    # - name: Change user from www-data to hypothesis for nginx
-    #   lineinfile:
-    #     path: /etc/nginx/nginx.conf
-    #     regexp: '^user .*www-data;$'
-    #     line: 'user hypothesis;'
+    - name: Change user from www-data to hypothesis for nginx
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '^user .*www-data;$'
+        line: 'user hypothesis;'
     
-    # - name: Change owner on all files
-    #   file: 
-    #     dest:
-    #       - /var/log/nginx
-    #       - /var/lib/nginx
-    #       - /var/tmp/nginx
-    #     owner: hypothesis
-    #     group: hypothesis
-    #     recurse: yes
+    - name: Change owner on all files
+      file: 
+        dest:
+          - /var/log/nginx
+          - /var/lib/nginx
+          - /var/tmp/nginx
+        owner: hypothesis
+        group: hypothesis
+        recurse: yes
 
-    # - name: Add new vhost in nginx-hypothesis.conf
-    #   copy:
-    #     src: nginx-hypothesis.conf
-    #     dest: /etc/nginx/sites-available/hypothesis
-    #     mode: 0644
-    #     owner: root
+    - name: Add new vhost in nginx-hypothesis.conf
+      copy:
+        src: nginx-hypothesis.conf
+        dest: /etc/nginx/sites-available/hypothesis
+        mode: 0644
+        owner: root
 
-    # - name: Create symbolic link to enable
-    #   file: 
-    #     src: /etc/nginx/sites-available/hypothesis
-    #     dest: /etc/nginx/sites-enabled/hypothesis
-    #     state: link
+    - name: Create symbolic link to enable
+      file: 
+        src: /etc/nginx/sites-available/hypothesis
+        dest: /etc/nginx/sites-enabled/hypothesis
+        state: link
 
-    # - name: Disable default vhost
-    #   file:
-    #     path: /etc/nginx/sites-enabled/hypothesis
-    #     state: absent
+    - name: Disable default vhost
+      file:
+        path: /etc/nginx/sites-enabled/hypothesis
+        state: absent
     
-    # - name: Change domainname to target domain
-    #   lineinfile:
-    #     path: /etc/nginx/sites-available/hypothesis
-    #     regexp: '.*server_name .*h.envs.subut.ai$'
-    #     line: "   server_name {{ subutai.user_variables.domain }}"
+    - name: Change domainname to target domain
+      lineinfile:
+        path: /etc/nginx/sites-available/hypothesis
+        regexp: '.*server_name .*h.envs.subut.ai$'
+        line: "   server_name {{ subutai.user_variables.domain }}"
     
     # -------------------------------------------------------------------------
     # Building Hypothesis
