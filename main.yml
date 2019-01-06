@@ -12,7 +12,7 @@
     - name: Disable dpkg fsync
       raw: test -e /etc/dpkg/dpkg.cfg.d/unsafe-io || echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/unsafe-io
 
-    - name: Upgrade debian
+    - name: Upgrade packages
       apt:
         update_cache: true
         upgrade: true
@@ -23,15 +23,13 @@
 
     - name: Install setup tools
       apt:
-        name: "{{ item }}"
-        allow_unauthenticated: yes
-      with_items:
-        - dirmngr
-        - apt-transport-https
-        - ca-certificates
-        - sudo
-        - locales
-        - curl
+        name: 
+          - dirmngr
+          - apt-transport-https
+          - ca-certificates
+          - sudo
+          - locales
+          - curl
 
     - name: Transfer locales_setup.sh
       copy: src=locales_setup.sh dest=/root/locales_setup.sh
@@ -45,21 +43,19 @@
 
     - name: Install required debs
       apt:
-        name: "{{ item }}"
-        state: present
-      with_items: 
-        - build-essential
-        - git
-        - libevent-dev
-        - libffi-dev
-        - libssl-dev
-        - libpq-dev
-        - libfontconfig
-        - nginx
-        - python-dev
-        - python-virtualenv
-        - python-setuptools
-        - python-pip
+        name:
+          - build-essential
+          - git
+          - libevent-dev
+          - libffi-dev
+          - libssl-dev
+          - libpq-dev
+          - libfontconfig
+          - nginx
+          - python-dev
+          - python-virtualenv
+          - python-setuptools
+          - python-pip
 
     # -------------------------------------------------------------------------
     # Collectd Repository and Install
@@ -240,6 +236,7 @@
       blockinfile:
         path: /etc/profile.d/hypothesis.sh
         create: yes
+        mode: 0755
         block: |
           PATH=/var/lib/hypothesis/bin:$PATH
           PYTHONPATH=/var/lib/hypothesis:$PYTHONPATH
